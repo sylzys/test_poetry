@@ -1,0 +1,50 @@
+on: [push]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    
+    - uses: azure/docker-login@v1
+      with:
+        login-server: 52114d6dedda4e79a1f0f91221731c9d.azurecr.io
+        username: ${{ secrets.acr_52114d6dedda4e79a1f0f91221731c9d_username }}
+        password: ${{ secrets.acr_52114d6dedda4e79a1f0f91221731c9d_password }}
+    
+    - name: Build and push image to ACR
+      id: build-image
+      run: |
+        docker build "$GITHUB_WORKSPACE/." -f  "docker-compose.yaml" -t 52114d6dedda4e79a1f0f91221731c9d.azurecr.io/kubclsuter:${{ github.sha }} --label dockerfile-path=docker-compose.yaml
+        docker push 52114d6dedda4e79a1f0f91221731c9d.azurecr.io/kubclsuter:${{ github.sha }}
+    
+    - uses: azure/k8s-set-context@v1
+      with:
+         kubeconfig: ${{ secrets.aks_kubclsuter_kubeConfig }}
+      id: login
+    
+    - name: Create namespace
+      run: |
+        namespacePresent=`kubectl get namespace | grep kub-clsuterb69c | wc -l`
+        if [ $namespacePresent -eq 0 ]
+        then
+            echo `kubectl create namespace kub-clsuterb69c`
+        fi
+
+    - uses: azure/k8s-create-secret@v1
+      with:
+        namespace: kub-clsuterb69c
+        container-registry-url: 52114d6dedda4e79a1f0f91221731c9d.azurecr.io
+        container-registry-username: ${{ secrets.acr_52114d6dedda4e79a1f0f91221731c9d_username }}
+        container-registry-password: ${{ secrets.acr_52114d6dedda4e79a1f0f91221731c9d_password }}
+        secret-name: kubclsuterdockerauth
+       
+    - uses: azure/k8s-deploy@v1.2
+      with:
+        namespace: kub-clsuterb69c
+        manifests: |
+          manifests/deployment.yml
+          manifests/service.yml
+        images: |
+          52114d6dedda4e79a1f0f91221731c9d.azurecr.io/kubclsuter:${{ github.sha }}
+        imagepullsecrets: |
+          kubclsuterdockerauth
