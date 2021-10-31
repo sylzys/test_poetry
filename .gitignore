@@ -2,3 +2,5 @@ __pycache__
 .flaskenv
 secret.yaml
 act.exe
+lifetime-sz.PublishSettings
+profile.publishsettings
