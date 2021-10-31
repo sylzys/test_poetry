@@ -1,0 +1,5 @@
+ALLOWED_EXTENSIONS: { "csv" }
+API_KEY: ""
+HEADERS: { "Content-Type": "application/json" }
+URL: "http://87c8bfb3-df56-4054-9245-a1c35e287b38.francecentral.azurecontainer.io/score"
+UPLOAD_FOLDER: "./tmp"

@@ -1,17 +1,9 @@
 import pytest
-
-from app import app
-
-
-@pytest.fixture
-def client():
-    app.config["TESTING"] = True
-
-    with app.test_client() as client:
-        yield client
+from app import allowed_file
 
 
-def test_home(client):
-    response = client.get("/")
-
-    assert response.status_code == 200
+@pytest.mark.parametrize(
+    "test_input,expected", [("file.csv", True), ("file.pdf", False)]
+)
+def test_allowed_file(test_input, expected):
+    assert allowed_file(test_input) == expected
