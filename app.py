@@ -55,8 +55,7 @@ def predict():
         "{}/{}".format(config["UPLOAD_FOLDER"], session["current_filename"])
     )
     body = json.dumps({"data": data.to_json()})
-    res = pd.read_json(requests.post(config["URL"],
-                                     body, config["HEADERS"]).json())
+    res = pd.read_json(requests.post(config["URL"], body, config["HEADERS"]).json())
     return render_template(
         "index.html",
         column_names=res.columns.values,
