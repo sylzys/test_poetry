@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "kubclsuter-237d"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "kubclsuter-237d"
+  template:
+    metadata:
+      labels:
+        app: "kubclsuter-237d"
+    spec:
+      containers:
+        - name: "kubclsuter-237d"
+          image: "52114d6dedda4e79a1f0f91221731c9d.azurecr.io/kubclsuter"
+          ports:
+          - containerPort: 8080
