@@ -4,15 +4,13 @@ import os
 import bios
 import pandas as pd
 import requests
-from flask import Flask, flash, redirect, render_template
-from flask import request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 config = bios.read("config.yaml")
-secret = bios.read("secret.yaml")
 app.config["UPLOAD_FOLDER"] = config["UPLOAD_FOLDER"]
-app.config["SECRET_KEY"] = secret["SECRET_KEY"]
+app.config["SECRET_KEY"] = config["SECRET_KEY"]
 
 
 def allowed_file(filename):
@@ -51,18 +49,21 @@ def upload_file():
 
 @app.route("/predict", methods=["GET"])
 def predict():
-    data = pd.read_csv(
-        "{}/{}".format(config["UPLOAD_FOLDER"], session["current_filename"])
-    )
-    body = json.dumps({"data": data.to_json()})
-    res = pd.read_json(requests.post(config["URL"], body, config["HEADERS"]).json())
-    return render_template(
-        "index.html",
-        column_names=res.columns.values,
-        row_data=list(res.values.tolist()),
-        link_column="CustomerID",
-        zip=zip,
-    )
+    try:
+        data = pd.read_csv(
+            "{}/{}".format(config["UPLOAD_FOLDER"], session["current_filename"])
+        )
+        body = json.dumps({"data": data.to_json()})
+        res = pd.read_json(requests.post(config["URL"], body, config["HEADERS"]).json())
+        return render_template(
+            "index.html",
+            column_names=res.columns.values,
+            row_data=list(res.values.tolist()),
+            link_column="CustomerID",
+            zip=zip,
+        )
+    except:
+        return "Error handling the file", 400
 
 
 if __name__ == "__main__":

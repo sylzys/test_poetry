@@ -3,3 +3,4 @@ API_KEY: ""
 HEADERS: { "Content-Type": "application/json" }
 URL: "http://87c8bfb3-df56-4054-9245-a1c35e287b38.francecentral.azurecontainer.io/score"
 UPLOAD_FOLDER: "./tmp"
+SECRET_KEY: "3e4c5d163bb242917aa0d88757a5611ae55c5a969b71670a5b1d1d6a13bd3f1e"
